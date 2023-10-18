@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bebek ölüm ve intihar sayıları</title>
+    <style>
+        text.bar-value {
+            fill: white;
+            font-weight: bold;
+            text-anchor: middle;
+        }
+        .bar-0 {
+            width: 20px;
+            fill: #3089af; 
+        }
+        .bar-1 {
+            width: 20px;
+            fill: #e80d0d; 
+        }
+    </style>
+</head>
+<body>
+    <svg width="1120" height="500">
+        <!-- Title -->
+        <text x="420" y="10" fill="black" font-weight="bold">Bebek ölüm ve intihar sayıları, 2009-2022</text>
+
+        <!-- Y-Axes -->
+        <line x1="80" y1="50" x2="80" y2="450" stroke="black" />
+        <line x1="1070" y1="50" x2="1070" y2="450" stroke="black" />
+        <text x="60" y="30" fill="black">(Sayı)</text>
+        <text x="1050" y="30" fill="black">(Binde)</text>
+        <!-- X-Axis -->
+        <line x1="80" y1="450" x2="1070" y2="450" stroke="black" />
+    
+        <!-- Y-Axis Labels -->
+        <text x="60" y="50" text-anchor="end">20000</text>
+        <text x="60" y="150" text-anchor="end">15000</text>
+        <text x="60" y="250" text-anchor="end">10000</text>
+        <text x="60" y="350" text-anchor="end">5000</text>
+        <text x="60" y="450" text-anchor="end">0</text>
+        <text x="1090" y="50" text-anchor="end">14</text>
+        <text x="1090" y="150" text-anchor="end">12</text>
+        <text x="1090" y="250" text-anchor="end">10</text>
+        <text x="1090" y="350" text-anchor="end">8</text>
+        <text x="1090" y="450" text-anchor="end">6</text>
+        <!-- X-Axis Labels -->
+        <script>
+            const xStart = 110;
+            const xGap = 70;
+            const years = Array.apply(null, {length: 14}).map(Number.call, Number).map(x => x + 2009);
+            for(let i = 0; i < years.length; i++) {
+                let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", xStart + 20 + i * xGap);
+                text.setAttribute("y", 470);
+                text.setAttribute("text-anchor", "middle");
+                text.textContent = years[i];
+                document.querySelector("svg").appendChild(text);
+            }
+        </script>
+
+        <!-- Bars -->
+        <g id="plot-data"></g>
+        <script>
+            const bar_width = 20;
+            const yMax = 20000, maxHeight = 400, figureHeight = 450;
+            const svg = document.getElementById("plot-data");
+            const yValues = [
+                [17607,15164,14567,14974,14027,14951,13677,12910,12134,11718,11022,9757,10089,9522],
+                [2898,2933,2677,3287,3252,3169,3246,3193,3168,3342,3476,3710,4194,4146]
+            ]
+            for(let j = 0; j < yValues.length; j++) {
+                for(let i = 0; i < yValues[j].length; i++) {
+                    let bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    let height = yValues[j][i]/yMax * maxHeight;
+                    bar.setAttribute("class", "bar-" + j);
+                    bar.setAttribute("x", xStart + i * xGap + bar_width * j);
+                    bar.setAttribute("y", figureHeight - height);
+                    bar.setAttribute("height", height);
+                    svg.appendChild(bar);
+
+                    let textLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    textLabel.setAttribute("class", "bar-value");
+                    let x = xStart + i * xGap + bar_width * j + 15;
+                    textLabel.setAttribute("x", x);
+                    textLabel.setAttribute("y", 420);
+                    textLabel.setAttribute("transform", "rotate(270 " + x + " 420)");
+                    textLabel.textContent = yValues[j][i];
+                    svg.appendChild(textLabel);
+                }
+            }
+        </script>
+
+        <!-- Lines -->
+        <g id="plot-lines"></g>
+        <script>
+            const lineValues = [13.9,12.0,11.6,11.6,10.8,11.1,10.2,9.8,	9.3,	9.3,	9.3,	8.7,	9.3,	9.2];
+            const y2Max = 14, y2Min = 6;
+            const points = lineValues.map((value, index) => {
+                const x = xStart + index * xGap + 15;
+                const y = figureHeight - (value - y2Min)/(y2Max - y2Min) * maxHeight;
+                return `${x},${y}`;
+              });
+          
+            const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            polyline.setAttribute('points', points.join(' '));
+            polyline.setAttribute('fill', 'none');
+            polyline.setAttribute('stroke', 'black');
+            polyline.setAttribute('stroke-width', '2');
+            svg.appendChild(polyline);
+        </script>
+
+        <!-- Legend -->
+        <g id="legend">
+            <rect x="478" y="490" width="20" height="5" fill="#3089af" />
+            <text x="500" y="495">Bebek ölüm</text>
+
+            <rect x="585" y="490" width="20" height="5" fill="#e80d0d" />
+            <text x="607" y="495">Intihar</text>
+
+            <line x1="655" x2="675" y1="492" y2="492" stroke="black" />
+            <text x="678" y="495">Bebek ölüm hızı</text>
+        </g>
+      </svg>
+</body>
+</html>
